@@ -1,62 +1,193 @@
 
 import { useState } from 'react';
-import Navbar from '@/components/layout/Navbar';
 import PageTransition from '@/components/layout/PageTransition';
-import DimensionForm from '@/components/dimensions/DimensionForm';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription 
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Plus, Trash2, ArrowUpDown } from 'lucide-react';
+import { toast } from 'sonner';
 
-// Sample dimensions for demonstration
-const sampleDimensions = [
-  { name: 'Product A', code: 'PROD_A' },
-  { name: 'Product B', code: 'PROD_B' },
-  { name: 'Product C', code: 'PROD_C' }
-];
+interface Store {
+  id: string;
+  name: string;
+  location: string;
+}
 
 const Dimensions1 = () => {
-  const [activeTab, setActiveTab] = useState('manage');
+  const [stores, setStores] = useState<Store[]>([
+    { id: '1', name: 'Store 1', location: 'New York' },
+    { id: '2', name: 'Store 2', location: 'Los Angeles' },
+    { id: '3', name: 'Store 3', location: 'Chicago' },
+    { id: '4', name: 'Store 4', location: 'Houston' },
+    { id: '5', name: 'Store 5', location: 'Phoenix' },
+  ]);
+  
+  const [newStoreName, setNewStoreName] = useState('');
+  const [newStoreLocation, setNewStoreLocation] = useState('');
+
+  const handleAddStore = () => {
+    if (!newStoreName.trim()) {
+      toast.error('Store name is required');
+      return;
+    }
+    
+    const newStore: Store = {
+      id: Date.now().toString(),
+      name: newStoreName,
+      location: newStoreLocation,
+    };
+    
+    setStores([...stores, newStore]);
+    setNewStoreName('');
+    setNewStoreLocation('');
+    toast.success(`Added store: ${newStoreName}`);
+  };
+
+  const handleDeleteStore = (id: string) => {
+    setStores(stores.filter(store => store.id !== id));
+    toast.success('Store removed');
+  };
+
+  const moveStore = (index: number, direction: 'up' | 'down') => {
+    if ((direction === 'up' && index === 0) || 
+        (direction === 'down' && index === stores.length - 1)) {
+      return;
+    }
+    
+    const newStores = [...stores];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    [newStores[index], newStores[targetIndex]] = [newStores[targetIndex], newStores[index]];
+    setStores(newStores);
+  };
 
   return (
-    <>
-      <Navbar />
-      <PageTransition>
-        <div className="container py-24 px-4 mx-auto">
-          <div className="max-w-5xl mx-auto">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2">Dimension Management - Type 1</h1>
-              <p className="text-muted-foreground">
-                Create, edit, and manage your product dimensions in this section.
-              </p>
-            </div>
-
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid grid-cols-2 mb-8">
-                <TabsTrigger value="manage">Manage Products</TabsTrigger>
-                <TabsTrigger value="import">Bulk Import</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="manage" className="mt-0">
-                <DimensionForm 
-                  title="Product Dimensions" 
-                  description="Add and manage product dimensions that will be used in your data analysis." 
-                  dimensionType="Product"
-                />
-              </TabsContent>
-              
-              <TabsContent value="import" className="mt-0">
-                <div className="grid gap-4">
-                  <div className="bg-muted/50 p-8 rounded-lg text-center">
-                    <h3 className="text-xl font-medium mb-2">Bulk Import Coming Soon</h3>
-                    <p className="text-muted-foreground">
-                      This feature will allow you to upload CSV files to import multiple dimensions at once.
-                    </p>
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
+    <PageTransition>
+      <div className="p-6 max-w-[1600px] mx-auto">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold mb-1">Store Management</h1>
+          <p className="text-muted-foreground">
+            Add, edit, and organize store locations
+          </p>
         </div>
-      </PageTransition>
-    </>
+
+        <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
+          <Card>
+            <CardHeader>
+              <CardTitle>Add New Store</CardTitle>
+              <CardDescription>Enter store details below</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium mb-1">
+                    Store Name
+                  </label>
+                  <Input
+                    id="name"
+                    value={newStoreName}
+                    onChange={(e) => setNewStoreName(e.target.value)}
+                    placeholder="Enter store name"
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="location" className="block text-sm font-medium mb-1">
+                    Location
+                  </label>
+                  <Input
+                    id="location"
+                    value={newStoreLocation}
+                    onChange={(e) => setNewStoreLocation(e.target.value)}
+                    placeholder="Enter location"
+                  />
+                </div>
+                
+                <Button 
+                  onClick={handleAddStore} 
+                  className="w-full"
+                >
+                  <Plus className="h-4 w-4 mr-2" /> Add Store
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Store List</CardTitle>
+              <CardDescription>Manage your stores and their order</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {stores.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No stores added yet. Add your first store.
+                </div>
+              ) : (
+                <div className="border rounded-md overflow-hidden">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-muted/50">
+                        <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground w-12">Order</th>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Store Name</th>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Location</th>
+                        <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stores.map((store, index) => (
+                        <tr key={store.id} className="border-t">
+                          <td className="px-4 py-3">
+                            <div className="flex flex-col gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => moveStore(index, 'up')}
+                                disabled={index === 0}
+                                className="h-6 w-6"
+                              >
+                                <ArrowUpDown className="h-4 w-4 rotate-90" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => moveStore(index, 'down')}
+                                disabled={index === stores.length - 1}
+                                className="h-6 w-6"
+                              >
+                                <ArrowUpDown className="h-4 w-4 rotate-270" />
+                              </Button>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 font-medium">{store.name}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{store.location}</td>
+                          <td className="px-4 py-3 text-right">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteStore(store.id)}
+                              className="h-8 w-8 text-destructive hover:text-destructive/90"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </PageTransition>
   );
 };
 

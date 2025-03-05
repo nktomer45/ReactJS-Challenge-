@@ -11,6 +11,8 @@ import Dimensions2 from "./pages/Dimensions2";
 import DataEntry from "./pages/DataEntry";
 import ChartView from "./pages/ChartView";
 import NotFound from "./pages/NotFound";
+import CustomNavbar from "./components/layout/CustomNavbar";
+import Sidebar from "./components/layout/Sidebar";
 
 const queryClient = new QueryClient();
 
@@ -20,16 +22,24 @@ const App = () => (
       <Toaster />
       <Sonner position="top-right" expand closeButton theme="light" richColors />
       <BrowserRouter>
-        <AnimatePresence mode="wait">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/dimensions1" element={<Dimensions1 />} />
-            <Route path="/dimensions2" element={<Dimensions2 />} />
-            <Route path="/data-entry" element={<DataEntry />} />
-            <Route path="/chart-view" element={<ChartView />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AnimatePresence>
+        <div className="min-h-screen flex flex-col">
+          <CustomNavbar />
+          <div className="flex flex-1 overflow-hidden">
+            <Sidebar />
+            <main className="flex-1 overflow-auto">
+              <AnimatePresence mode="wait">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/dimensions1" element={<Dimensions1 />} />
+                  <Route path="/dimensions2" element={<Dimensions2 />} />
+                  <Route path="/data-entry" element={<DataEntry />} />
+                  <Route path="/chart-view" element={<ChartView />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </AnimatePresence>
+            </main>
+          </div>
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
