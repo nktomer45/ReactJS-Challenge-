@@ -24,19 +24,36 @@ import {
   ReferenceLine,
 } from 'recharts';
 
-// Sample data for demonstration
-const generateSampleWeeks = () => {
+// Sample data for demonstration, more aligned with the spreadsheet
+const generateWeeklyData = (storeId: string) => {
+  const baseGmDollars = storeId === '1' 
+    ? [15000, 16200, 17500, 14800, 16900, 18500, 19200, 17800, 16500, 15800, 16300, 17500, 18200, 19500, 18800, 17200]
+    : storeId === '2'
+    ? [12500, 13800, 14200, 12900, 13500, 15200, 16800, 15500, 14200, 13500, 14600, 15800, 16500, 17200, 16800, 15500]
+    : [9800, 10500, 11200, 10800, 11500, 12500, 13200, 12800, 11900, 11200, 12100, 13500, 14200, 15000, 14500, 13800];
+  
+  const baseSalesDollars = storeId === '1'
+    ? [39000, 41500, 44800, 38500, 42500, 45800, 48000, 44500, 41200, 39500, 40800, 43800, 45500, 48800, 47000, 43000]
+    : storeId === '2'
+    ? [32000, 34500, 35500, 32200, 33700, 38000, 42000, 38700, 35500, 33700, 36500, 39500, 41200, 43000, 42000, 38700]
+    : [24500, 26200, 28000, 27000, 28700, 31200, 33000, 32000, 29700, 28000, 30200, 33700, 35500, 37500, 36200, 34500];
+  
   const weeks = [];
   const months = ['Jan', 'Feb', 'Mar', 'Apr'];
   
   for (let m = 0; m < months.length; m++) {
     for (let w = 1; w <= 4; w++) {
       const weekNum = m * 4 + w;
+      const index = weekNum - 1;
+      
+      // Apply some random variation
+      const variation = 0.95 + (Math.random() * 0.1);
+      
       weeks.push({
         week: `W${weekNum}`,
         month: months[m],
-        gmDollars: Math.floor(Math.random() * 50000) + 10000,
-        salesDollars: Math.floor(Math.random() * 100000) + 50000,
+        gmDollars: Math.round(baseGmDollars[index] * variation),
+        salesDollars: Math.round(baseSalesDollars[index] * variation),
       });
     }
   }
@@ -44,13 +61,11 @@ const generateSampleWeeks = () => {
   return weeks;
 };
 
-// Sample stores
+// Sample stores aligned with the specification
 const stores = [
-  { id: 1, name: 'Store 1' },
-  { id: 2, name: 'Store 2' },
-  { id: 3, name: 'Store 3' },
-  { id: 4, name: 'Store 4' },
-  { id: 5, name: 'Store 5' },
+  { id: '1', name: 'Store 1' },
+  { id: '2', name: 'Store 2' },
+  { id: '3', name: 'Store 3' },
 ];
 
 const ChartView = () => {
@@ -65,7 +80,7 @@ const ChartView = () => {
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      setData(generateSampleWeeks());
+      setData(generateWeeklyData(selectedStore));
       setIsLoading(false);
     };
     

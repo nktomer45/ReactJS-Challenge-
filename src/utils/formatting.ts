@@ -5,13 +5,13 @@
  */
 export const getGmPercentColor = (gmPercent: number): string => {
   if (gmPercent >= 40) {
-    return 'white';
+    return 'green';
   } else if (gmPercent >= 10) {
-    return 'white';
+    return 'yellow';
   } else if (gmPercent > 5) {
-    return 'white';
+    return 'orange';
   } else {
-    return 'white';
+    return 'red';
   }
 };
 
