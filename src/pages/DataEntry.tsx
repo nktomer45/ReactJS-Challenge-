@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import PageTransition from '@/components/layout/PageTransition';
@@ -9,231 +10,163 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Download, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatCurrency, formatPercent, getGmPercentColor } from '@/utils/formatting';
-
-interface Store {
-  id: string;
-  name: string;
-}
-
-interface SKU {
-  id: string;
-  name: string;
-  code: string;
-  price: number;
-  cost: number;
-}
-
-interface PlanningRow {
-  id: string;
-  store: Store;
-  sku: SKU;
-  [key: string]: any;
-}
+import { fetchPlanningData, generateWeeks } from '@/utils/googleSheets';
 
 const DataEntry = () => {
   const gridRef = useRef<AgGridReact>(null);
-  const [rowData, setRowData] = useState<PlanningRow[]>([]);
+  const [rowData, setRowData] = useState<any[]>([]);
   const [columnDefs, setColumnDefs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Sample data
-  const stores: Store[] = [
-    { id: '1', name: 'Store 1' },
-    { id: '2', name: 'Store 2' },
-    { id: '3', name: 'Store 3' },
-  ];
-
-  const skus: SKU[] = [
-    { id: '1', name: 'Product A', code: 'SKU001', price: 19.99, cost: 10.50 },
-    { id: '2', name: 'Product B', code: 'SKU002', price: 29.99, cost: 15.75 },
-    { id: '3', name: 'Product C', code: 'SKU003', price: 9.99, cost: 4.25 },
-  ];
-
-  // Generate weeks for a calendar period
-  const generateWeeks = () => {
-    const weeks = [];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr'];
-    
-    for (let m = 0; m < months.length; m++) {
-      for (let w = 1; w <= 4; w++) {
-        const weekNum = m * 4 + w;
-        weeks.push({
-          month: months[m],
-          week: `W${weekNum}`,
-          id: `w${weekNum}`
-        });
-      }
-    }
-    
-    return weeks;
-  };
-
-  const weeks = generateWeeks();
-
   useEffect(() => {
-    // Generate row data - cross join of stores and SKUs
-    const generateRowData = () => {
-      const rows: PlanningRow[] = [];
-      
-      stores.forEach(store => {
-        skus.forEach(sku => {
-          const row: PlanningRow = {
-            id: `${store.id}_${sku.id}`,
-            store,
-            sku
-          };
-          
-          // Add week columns with default values
-          weeks.forEach(week => {
-            row[`${week.id}_units`] = Math.floor(Math.random() * 100);
-          });
-          
-          rows.push(row);
-        });
-      });
-      
-      return rows;
-    };
-
-    // Generate column definitions
-    const generateColumnDefs = () => {
-      // Fixed columns
-      const fixedCols = [
-        {
-          headerName: 'Store',
-          field: 'store.name',
-          pinned: 'left',
-          lockPosition: true,
-          sortable: true,
-          filter: 'agTextColumnFilter',
-          width: 120
-        },
-        {
-          headerName: 'SKU',
-          field: 'sku.name',
-          pinned: 'left',
-          lockPosition: true,
-          sortable: true,
-          filter: 'agTextColumnFilter',
-          width: 120
-        },
-        {
-          headerName: 'SKU Code',
-          field: 'sku.code',
-          pinned: 'left',
-          lockPosition: true,
-          sortable: true,
-          filter: 'agTextColumnFilter',
-          width: 120
-        }
-      ];
-      
-      // Dynamic columns based on weeks
-      const weekCols = [];
-      
-      // Group columns by month
-      const monthGroups: any = {};
-      
-      weeks.forEach(week => {
-        if (!monthGroups[week.month]) {
-          monthGroups[week.month] = {
-            headerName: week.month,
-            children: []
-          };
-        }
-        
-        // For each week, add 4 columns: Units, Sales $, GM $, GM %
-        monthGroups[week.month].children.push(
-          {
-            headerName: week.week,
-            children: [
-              {
-                headerName: 'Sales Units',
-                field: `${week.id}_units`,
-                editable: true,
-                sortable: true,
-                filter: 'agNumberColumnFilter',
-                width: 110,
-                type: 'numericColumn',
-                valueParser: (params: any) => {
-                  return Number(params.newValue);
-                },
-                cellStyle: { backgroundColor: '#f9fafb' }
-              },
-              {
-                headerName: 'Sales $',
-                width: 110,
-                valueGetter: (params: any) => {
-                  const units = params.data[`${week.id}_units`] || 0;
-                  const price = params.data.sku.price || 0;
-                  return units * price;
-                },
-                valueFormatter: (params: any) => {
-                  return formatCurrency(params.value);
-                },
-                type: 'numericColumn'
-              },
-              {
-                headerName: 'GM $',
-                width: 110,
-                valueGetter: (params: any) => {
-                  const units = params.data[`${week.id}_units`] || 0;
-                  const price = params.data.sku.price || 0;
-                  const cost = params.data.sku.cost || 0;
-                  return (units * price) - (units * cost);
-                },
-                valueFormatter: (params: any) => {
-                  return formatCurrency(params.value);
-                },
-                type: 'numericColumn'
-              },
-              {
-                headerName: 'GM %',
-                width: 110,
-                valueGetter: (params: any) => {
-                  const units = params.data[`${week.id}_units`] || 0;
-                  const price = params.data.sku.price || 0;
-                  const cost = params.data.sku.cost || 0;
-                  const salesDollars = units * price;
-                  const gmDollars = salesDollars - (units * cost);
-                  return salesDollars > 0 ? (gmDollars / salesDollars) * 100 : 0;
-                },
-                valueFormatter: (params: any) => {
-                  return formatPercent(params.value);
-                },
-                cellStyle: (params: any) => {
-                  return { 
-                    textAlign: 'right',
-                    color: getGmPercentColor(params.value)
-                  };
-                },
-                type: 'numericColumn'
-              }
-            ]
-          }
-        );
-      });
-      
-      // Convert month groups to array
-      const monthColDefs = Object.values(monthGroups);
-      
-      return [...fixedCols, ...monthColDefs];
-    };
-
-    // Simulate loading data
+    // Generate column definitions and load data from Google Sheets
     const loadData = async () => {
       setIsLoading(true);
       
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setRowData(generateRowData());
-      setColumnDefs(generateColumnDefs());
-      setIsLoading(false);
+      try {
+        // Fetch data from Google Sheets
+        const { rowData, weeks } = await fetchPlanningData();
+        
+        // Generate column definitions based on the weeks
+        const columnDefinitions = generateColumnDefs(weeks);
+        
+        setRowData(rowData);
+        setColumnDefs(columnDefinitions);
+      } catch (error) {
+        console.error('Error loading planning data:', error);
+        toast.error('Failed to load planning data');
+      } finally {
+        setIsLoading(false);
+      }
     };
     
     loadData();
   }, []);
+
+  // Generate column definitions
+  const generateColumnDefs = (weeks: {id: string, month: string, week: string}[]) => {
+    // Fixed columns
+    const fixedCols = [
+      {
+        headerName: 'Store',
+        field: 'store.name',
+        pinned: 'left',
+        lockPosition: true,
+        sortable: true,
+        filter: 'agTextColumnFilter',
+        width: 120
+      },
+      {
+        headerName: 'SKU',
+        field: 'sku.name',
+        pinned: 'left',
+        lockPosition: true,
+        sortable: true,
+        filter: 'agTextColumnFilter',
+        width: 120
+      },
+      {
+        headerName: 'SKU Code',
+        field: 'sku.code',
+        pinned: 'left',
+        lockPosition: true,
+        sortable: true,
+        filter: 'agTextColumnFilter',
+        width: 120
+      }
+    ];
+    
+    // Dynamic columns based on weeks
+    const weekCols = [];
+    
+    // Group columns by month
+    const monthGroups: any = {};
+    
+    weeks.forEach(week => {
+      if (!monthGroups[week.month]) {
+        monthGroups[week.month] = {
+          headerName: week.month,
+          children: []
+        };
+      }
+      
+      // For each week, add 4 columns: Units, Sales $, GM $, GM %
+      monthGroups[week.month].children.push(
+        {
+          headerName: week.week,
+          children: [
+            {
+              headerName: 'Sales Units',
+              field: `${week.id}_units`,
+              editable: true,
+              sortable: true,
+              filter: 'agNumberColumnFilter',
+              width: 110,
+              type: 'numericColumn',
+              valueParser: (params: any) => {
+                return Number(params.newValue);
+              },
+              cellStyle: { backgroundColor: '#f9fafb' }
+            },
+            {
+              headerName: 'Sales $',
+              width: 110,
+              valueGetter: (params: any) => {
+                const units = params.data[`${week.id}_units`] || 0;
+                const price = params.data.sku.price || 0;
+                return units * price;
+              },
+              valueFormatter: (params: any) => {
+                return formatCurrency(params.value);
+              },
+              type: 'numericColumn'
+            },
+            {
+              headerName: 'GM $',
+              width: 110,
+              valueGetter: (params: any) => {
+                const units = params.data[`${week.id}_units`] || 0;
+                const price = params.data.sku.price || 0;
+                const cost = params.data.sku.cost || 0;
+                return (units * price) - (units * cost);
+              },
+              valueFormatter: (params: any) => {
+                return formatCurrency(params.value);
+              },
+              type: 'numericColumn'
+            },
+            {
+              headerName: 'GM %',
+              width: 110,
+              valueGetter: (params: any) => {
+                const units = params.data[`${week.id}_units`] || 0;
+                const price = params.data.sku.price || 0;
+                const cost = params.data.sku.cost || 0;
+                const salesDollars = units * price;
+                const gmDollars = salesDollars - (units * cost);
+                return salesDollars > 0 ? (gmDollars / salesDollars) * 100 : 0;
+              },
+              valueFormatter: (params: any) => {
+                return formatPercent(params.value);
+              },
+              cellStyle: (params: any) => {
+                return { 
+                  textAlign: 'right',
+                  color: getGmPercentColor(params.value)
+                };
+              },
+              type: 'numericColumn'
+            }
+          ]
+        }
+      );
+    });
+    
+    // Convert month groups to array
+    const monthColDefs = Object.values(monthGroups);
+    
+    return [...fixedCols, ...monthColDefs];
+  };
 
   const handleExportData = () => {
     if (gridRef.current && gridRef.current.api) {
@@ -241,6 +174,22 @@ const DataEntry = () => {
         fileName: 'planning-data-export.csv'
       });
       toast.success('Data exported successfully');
+    }
+  };
+
+  const handleRefreshData = async () => {
+    setIsLoading(true);
+    toast.info('Refreshing data from Google Sheets...');
+    
+    try {
+      const { rowData, weeks } = await fetchPlanningData();
+      setRowData(rowData);
+      toast.success('Data refreshed successfully');
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      toast.error('Failed to refresh data');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -259,8 +208,19 @@ const DataEntry = () => {
             <Button 
               variant="outline" 
               size="sm"
+              onClick={handleRefreshData}
+              className="flex items-center gap-1"
+              disabled={isLoading}
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
               onClick={handleExportData}
               className="flex items-center gap-1"
+              disabled={isLoading}
             >
               <Download className="w-4 h-4" />
               Export
