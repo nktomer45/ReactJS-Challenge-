@@ -1,17 +1,17 @@
 
 /**
- * Returns the background color class for a GM percentage value
+ * Returns the text color for a GM percentage value
  * based on conditional formatting rules
  */
 export const getGmPercentColor = (gmPercent: number): string => {
   if (gmPercent >= 40) {
-    return 'bg-green-500 text-white';
+    return 'white';
   } else if (gmPercent >= 10) {
-    return 'bg-yellow-500 text-white';
+    return 'white';
   } else if (gmPercent > 5) {
-    return 'bg-orange-500 text-white';
+    return 'white';
   } else {
-    return 'bg-red-500 text-white';
+    return 'white';
   }
 };
 

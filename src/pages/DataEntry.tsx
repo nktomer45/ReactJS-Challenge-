@@ -205,7 +205,7 @@ const DataEntry = () => {
                 cellStyle: (params: any) => {
                   return { 
                     textAlign: 'right',
-                    ...getGmPercentColor(params.value)
+                    color: getGmPercentColor(params.value)
                   };
                 },
                 type: 'numericColumn'
