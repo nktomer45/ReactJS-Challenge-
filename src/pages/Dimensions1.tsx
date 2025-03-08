@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PageTransition from '@/components/layout/PageTransition';
 import { Button } from '@/components/ui/button';
 import { 
@@ -17,19 +17,44 @@ interface Store {
   id: string;
   name: string;
   location: string;
+  city: string;
+  state: string;
+  seqNo: number;
 }
 
+const initialStoresData: Store[] = [
+  { id: 'ST035', name: 'San Francisco Bay Trends', location: 'San Francisco, CA', city: 'San Francisco', state: 'CA', seqNo: 1 },
+  { id: 'ST046', name: 'Phoenix Sunwear', location: 'Phoenix, AZ', city: 'Phoenix', state: 'AZ', seqNo: 2 },
+  { id: 'ST064', name: 'Dallas Ranch Supply', location: 'Dallas, TX', city: 'Dallas', state: 'TX', seqNo: 3 },
+  { id: 'ST066', name: 'Atlanta Outfitters', location: 'Atlanta, GA', city: 'Atlanta', state: 'GA', seqNo: 4 },
+  { id: 'ST073', name: 'Nashville Melody Music Store', location: 'Nashville, TN', city: 'Nashville', state: 'TN', seqNo: 5 },
+  { id: 'ST074', name: 'New York Empire Eats', location: 'New York, NY', city: 'New York', state: 'NY', seqNo: 6 },
+  { id: 'ST091', name: 'Denver Peaks Outdoor', location: 'Denver, CO', city: 'Denver', state: 'CO', seqNo: 7 },
+  { id: 'ST094', name: 'Philadelphia Liberty Market', location: 'Philadelphia, PA', city: 'Philadelphia', state: 'PA', seqNo: 8 },
+  { id: 'ST097', name: 'Boston Harbor Books', location: 'Boston, MA', city: 'Boston', state: 'MA', seqNo: 9 },
+  { id: 'ST101', name: 'Austin Vibe Co.', location: 'Austin, TX', city: 'Austin', state: 'TX', seqNo: 10 },
+  { id: 'ST131', name: 'Los Angeles Luxe', location: 'Los Angeles, CA', city: 'Los Angeles', state: 'CA', seqNo: 11 },
+  { id: 'ST150', name: 'Houston Harvest Market', location: 'Houston, TX', city: 'Houston', state: 'TX', seqNo: 12 },
+  { id: 'ST151', name: 'Portland Evergreen Goods', location: 'Portland, OR', city: 'Portland', state: 'OR', seqNo: 13 },
+  { id: 'ST156', name: 'Chicago Charm Boutique', location: 'Chicago, IL', city: 'Chicago', state: 'IL', seqNo: 14 },
+  { id: 'ST163', name: 'Las Vegas Neon Treasures', location: 'Las Vegas, NV', city: 'Las Vegas', state: 'NV', seqNo: 15 },
+  { id: 'ST175', name: 'Seattle Skyline Goods', location: 'Seattle, WA', city: 'Seattle', state: 'WA', seqNo: 16 },
+  { id: 'ST176', name: 'Miami Breeze Apparel', location: 'Miami, FL', city: 'Miami', state: 'FL', seqNo: 17 },
+  { id: 'ST177', name: 'San Diego Wave Surf Shop', location: 'San Diego, CA', city: 'San Diego', state: 'CA', seqNo: 18 },
+  { id: 'ST193', name: 'Charlotte Queen's Closet', location: 'Charlotte, NC', city: 'Charlotte', state: 'NC', seqNo: 19 },
+  { id: 'ST208', name: 'Detroit Motor Gear', location: 'Detroit, MI', city: 'Detroit', state: 'MI', seqNo: 20 }
+];
+
 const Dimensions1 = () => {
-  const [stores, setStores] = useState<Store[]>([
-    { id: '1', name: 'Store 1', location: 'New York' },
-    { id: '2', name: 'Store 2', location: 'Los Angeles' },
-    { id: '3', name: 'Store 3', location: 'Chicago' },
-    { id: '4', name: 'Store 4', location: 'Houston' },
-    { id: '5', name: 'Store 5', location: 'Phoenix' },
-  ]);
-  
+  const [stores, setStores] = useState<Store[]>([]);
   const [newStoreName, setNewStoreName] = useState('');
-  const [newStoreLocation, setNewStoreLocation] = useState('');
+  const [newStoreCity, setNewStoreCity] = useState('');
+  const [newStoreState, setNewStoreState] = useState('');
+
+  useEffect(() => {
+    // Load initial stores data
+    setStores(initialStoresData);
+  }, []);
 
   const handleAddStore = () => {
     if (!newStoreName.trim()) {
@@ -37,15 +62,27 @@ const Dimensions1 = () => {
       return;
     }
     
+    if (!newStoreCity.trim() || !newStoreState.trim()) {
+      toast.error('City and state are required');
+      return;
+    }
+    
+    const nextSeqNo = stores.length > 0 ? Math.max(...stores.map(s => s.seqNo)) + 1 : 1;
+    const storeId = `ST${nextSeqNo.toString().padStart(3, '0')}`;
+    
     const newStore: Store = {
-      id: Date.now().toString(),
+      id: storeId,
       name: newStoreName,
-      location: newStoreLocation,
+      location: `${newStoreCity}, ${newStoreState}`,
+      city: newStoreCity,
+      state: newStoreState,
+      seqNo: nextSeqNo
     };
     
     setStores([...stores, newStore]);
     setNewStoreName('');
-    setNewStoreLocation('');
+    setNewStoreCity('');
+    setNewStoreState('');
     toast.success(`Added store: ${newStoreName}`);
   };
 
@@ -63,7 +100,14 @@ const Dimensions1 = () => {
     const newStores = [...stores];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     
+    // Swap sequence numbers
+    const tempSeqNo = newStores[index].seqNo;
+    newStores[index].seqNo = newStores[targetIndex].seqNo;
+    newStores[targetIndex].seqNo = tempSeqNo;
+    
+    // Swap positions in array
     [newStores[index], newStores[targetIndex]] = [newStores[targetIndex], newStores[index]];
+    
     setStores(newStores);
   };
 
@@ -98,14 +142,27 @@ const Dimensions1 = () => {
                 </div>
                 
                 <div>
-                  <label htmlFor="location" className="block text-sm font-medium mb-1">
-                    Location
+                  <label htmlFor="city" className="block text-sm font-medium mb-1">
+                    City
                   </label>
                   <Input
-                    id="location"
-                    value={newStoreLocation}
-                    onChange={(e) => setNewStoreLocation(e.target.value)}
-                    placeholder="Enter location"
+                    id="city"
+                    value={newStoreCity}
+                    onChange={(e) => setNewStoreCity(e.target.value)}
+                    placeholder="Enter city"
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="state" className="block text-sm font-medium mb-1">
+                    State
+                  </label>
+                  <Input
+                    id="state"
+                    value={newStoreState}
+                    onChange={(e) => setNewStoreState(e.target.value)}
+                    placeholder="Enter state (e.g. CA)"
+                    maxLength={2}
                   />
                 </div>
                 
@@ -135,6 +192,7 @@ const Dimensions1 = () => {
                     <thead>
                       <tr className="bg-muted/50">
                         <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground w-12">Order</th>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Store ID</th>
                         <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Store Name</th>
                         <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Location</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Actions</th>
@@ -165,6 +223,7 @@ const Dimensions1 = () => {
                               </Button>
                             </div>
                           </td>
+                          <td className="px-4 py-3 font-mono text-sm">{store.id}</td>
                           <td className="px-4 py-3 font-medium">{store.name}</td>
                           <td className="px-4 py-3 text-muted-foreground">{store.location}</td>
                           <td className="px-4 py-3 text-right">

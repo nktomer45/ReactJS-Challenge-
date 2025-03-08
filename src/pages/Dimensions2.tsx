@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PageTransition from '@/components/layout/PageTransition';
 import { Button } from '@/components/ui/button';
 import { 
@@ -12,6 +11,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Plus, Trash2, Edit, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface SKU {
   id: string;
@@ -19,30 +25,68 @@ interface SKU {
   code: string;
   price: number;
   cost: number;
+  class: string;
+  department: string;
 }
 
+const initialSkusData: SKU[] = [
+  { id: 'SK00158', name: 'Crew Neck Merino Wool Sweater', code: 'SK00158', class: 'Tops', department: "Men's Apparel", price: 114.99, cost: 18.28 },
+  { id: 'SK00269', name: 'Faux Leather Leggings', code: 'SK00269', class: 'Jewelry', department: 'Footwear', price: 9.99, cost: 8.45 },
+  { id: 'SK00300', name: 'Fleece-Lined Parka', code: 'SK00300', class: 'Jewelry', department: 'Unisex Accessories', price: 199.99, cost: 17.80 },
+  { id: 'SK00304', name: 'Cotton Polo Shirt', code: 'SK00304', class: 'Tops', department: "Women's Apparel", price: 139.99, cost: 10.78 },
+  { id: 'SK00766', name: 'Foldable Travel Hat', code: 'SK00766', class: 'Tops', department: 'Footwear', price: 44.99, cost: 27.08 },
+  { id: 'SK00786', name: 'Chic Quilted Wallet', code: 'SK00786', class: 'Bottoms', department: 'Footwear', price: 14.99, cost: 4.02 },
+  { id: 'SK00960', name: 'High-Slit Maxi Dress', code: 'SK00960', class: 'Outerwear', department: 'Sportswear', price: 74.99, cost: 47.47 },
+  { id: 'SK01183', name: 'Turtleneck Cable Knit Sweater', code: 'SK01183', class: 'Footwear', department: 'Footwear', price: 49.99, cost: 22.60 },
+  { id: 'SK01189', name: 'Retro-Inspired Sunglasses', code: 'SK01189', class: 'Bottoms', department: "Women's Apparel", price: 194.99, cost: 115.63 },
+  { id: 'SK01193', name: 'Stretch Denim Overalls', code: 'SK01193', class: 'Bottoms', department: 'Unisex Accessories', price: 129.99, cost: 47.06 },
+  { id: 'SK01249', name: 'Adjustable Elastic Headband', code: 'SK01249', class: 'Footwear', department: "Women's Apparel", price: 19.99, cost: 1.34 },
+  { id: 'SK01319', name: 'Adjustable Baseball Cap', code: 'SK01319', class: 'Jewelry', department: "Men's Apparel", price: 4.99, cost: 2.29 },
+  { id: 'SK01349', name: 'Cotton Polo Shirt', code: 'SK01349', class: 'Bottoms', department: 'Unisex Accessories', price: 114.99, cost: 60.94 },
+  { id: 'SK01549', name: 'Faux Suede Ankle Boots', code: 'SK01549', class: 'Tops', department: 'Sportswear', price: 94.99, cost: 71.53 },
+  { id: 'SK01566', name: 'Striped Cotton Socks', code: 'SK01566', class: 'Accessories', department: 'Sportswear', price: 9.99, cost: 6.91 },
+  { id: 'SK01642', name: 'Performance Compression Tights', code: 'SK01642', class: 'Outerwear', department: 'Sportswear', price: 54.99, cost: 59.61 },
+  { id: 'SK01733', name: 'Vintage Logo Hoodie', code: 'SK01733', class: 'Accessories', department: "Men's Apparel", price: 94.99, cost: 84.45 },
+  { id: 'SK01896', name: 'Floral Chiffon Wrap Dress', code: 'SK01896', class: 'Accessories', department: 'Unisex Accessories', price: 149.99, cost: 68.55 },
+  { id: 'SK01927', name: 'Asymmetrical Hem Skirt', code: 'SK01927', class: 'Jewelry', department: 'Sportswear', price: 99.99, cost: 66.89 },
+  { id: 'SK01950', name: 'Slim Fit Pinstripe Suit', code: 'SK01950', class: 'Bottoms', department: "Women's Apparel", price: 99.99, cost: 13.30 }
+];
+
+const productClasses = ['Tops', 'Bottoms', 'Outerwear', 'Footwear', 'Accessories', 'Jewelry'];
+const departments = ["Men's Apparel", "Women's Apparel", "Unisex Accessories", "Footwear", "Sportswear"];
+
 const Dimensions2 = () => {
-  const [skus, setSkus] = useState<SKU[]>([
-    { id: '1', name: 'Product A', code: 'SKU001', price: 19.99, cost: 10.50 },
-    { id: '2', name: 'Product B', code: 'SKU002', price: 29.99, cost: 15.75 },
-    { id: '3', name: 'Product C', code: 'SKU003', price: 9.99, cost: 4.25 },
-    { id: '4', name: 'Product D', code: 'SKU004', price: 49.99, cost: 25.00 },
-  ]);
-  
+  const [skus, setSkus] = useState<SKU[]>([]);
   const [newSkuName, setNewSkuName] = useState('');
-  const [newSkuCode, setNewSkuCode] = useState('');
+  const [newSkuClass, setNewSkuClass] = useState('');
+  const [newSkuDepartment, setNewSkuDepartment] = useState('');
   const [newSkuPrice, setNewSkuPrice] = useState('');
   const [newSkuCost, setNewSkuCost] = useState('');
   
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
-  const [editCode, setEditCode] = useState('');
+  const [editClass, setEditClass] = useState('');
+  const [editDepartment, setEditDepartment] = useState('');
   const [editPrice, setEditPrice] = useState('');
   const [editCost, setEditCost] = useState('');
 
+  useEffect(() => {
+    setSkus(initialSkusData);
+  }, []);
+
   const handleAddSku = () => {
-    if (!newSkuName.trim() || !newSkuCode.trim()) {
-      toast.error('SKU name and code are required');
+    if (!newSkuName.trim()) {
+      toast.error('SKU name is required');
+      return;
+    }
+    
+    if (!newSkuClass) {
+      toast.error('Product class is required');
+      return;
+    }
+    
+    if (!newSkuDepartment) {
+      toast.error('Department is required');
       return;
     }
     
@@ -51,17 +95,25 @@ const Dimensions2 = () => {
       return;
     }
     
+    const nextSkuNumber = skus.length > 0 
+      ? Math.max(...skus.map(s => parseInt(s.id.substring(2)))) + 1 
+      : 1;
+    const skuId = `SK${nextSkuNumber.toString().padStart(5, '0')}`;
+    
     const newSku: SKU = {
-      id: Date.now().toString(),
+      id: skuId,
       name: newSkuName,
-      code: newSkuCode,
+      code: skuId,
+      class: newSkuClass,
+      department: newSkuDepartment,
       price: parseFloat(newSkuPrice),
       cost: parseFloat(newSkuCost),
     };
     
     setSkus([...skus, newSku]);
     setNewSkuName('');
-    setNewSkuCode('');
+    setNewSkuClass('');
+    setNewSkuDepartment('');
     setNewSkuPrice('');
     setNewSkuCost('');
     toast.success(`Added SKU: ${newSkuName}`);
@@ -75,7 +127,8 @@ const Dimensions2 = () => {
   const startEditing = (sku: SKU) => {
     setEditingId(sku.id);
     setEditName(sku.name);
-    setEditCode(sku.code);
+    setEditClass(sku.class);
+    setEditDepartment(sku.department);
     setEditPrice(sku.price.toString());
     setEditCost(sku.cost.toString());
   };
@@ -85,8 +138,18 @@ const Dimensions2 = () => {
   };
 
   const saveEdit = (id: string) => {
-    if (!editName.trim() || !editCode.trim()) {
-      toast.error('SKU name and code are required');
+    if (!editName.trim()) {
+      toast.error('SKU name is required');
+      return;
+    }
+    
+    if (!editClass) {
+      toast.error('Product class is required');
+      return;
+    }
+    
+    if (!editDepartment) {
+      toast.error('Department is required');
       return;
     }
     
@@ -99,8 +162,9 @@ const Dimensions2 = () => {
       sku.id === id 
         ? { 
             ...sku, 
-            name: editName, 
-            code: editCode, 
+            name: editName,
+            class: editClass,
+            department: editDepartment,
             price: parseFloat(editPrice), 
             cost: parseFloat(editCost) 
           } 
@@ -142,15 +206,41 @@ const Dimensions2 = () => {
                 </div>
                 
                 <div>
-                  <label htmlFor="code" className="block text-sm font-medium mb-1">
-                    SKU Code
+                  <label htmlFor="class" className="block text-sm font-medium mb-1">
+                    Product Class
                   </label>
-                  <Input
-                    id="code"
-                    value={newSkuCode}
-                    onChange={(e) => setNewSkuCode(e.target.value)}
-                    placeholder="Enter SKU code"
-                  />
+                  <Select
+                    value={newSkuClass}
+                    onValueChange={setNewSkuClass}
+                  >
+                    <SelectTrigger id="class">
+                      <SelectValue placeholder="Select product class" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {productClasses.map(cls => (
+                        <SelectItem key={cls} value={cls}>{cls}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <label htmlFor="department" className="block text-sm font-medium mb-1">
+                    Department
+                  </label>
+                  <Select
+                    value={newSkuDepartment}
+                    onValueChange={setNewSkuDepartment}
+                  >
+                    <SelectTrigger id="department">
+                      <SelectValue placeholder="Select department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {departments.map(dept => (
+                        <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div>
@@ -208,8 +298,10 @@ const Dimensions2 = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="bg-muted/50">
+                        <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">SKU ID</th>
                         <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">SKU Name</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">SKU Code</th>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Class</th>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Department</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Price ($)</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Cost ($)</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Actions</th>
@@ -220,6 +312,7 @@ const Dimensions2 = () => {
                         <tr key={sku.id} className="border-t">
                           {editingId === sku.id ? (
                             <>
+                              <td className="px-4 py-3 font-mono text-sm">{sku.id}</td>
                               <td className="px-4 py-3">
                                 <Input
                                   value={editName}
@@ -228,11 +321,34 @@ const Dimensions2 = () => {
                                 />
                               </td>
                               <td className="px-4 py-3">
-                                <Input
-                                  value={editCode}
-                                  onChange={(e) => setEditCode(e.target.value)}
-                                  className="h-8"
-                                />
+                                <Select
+                                  value={editClass}
+                                  onValueChange={setEditClass}
+                                >
+                                  <SelectTrigger className="h-8">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {productClasses.map(cls => (
+                                      <SelectItem key={cls} value={cls}>{cls}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </td>
+                              <td className="px-4 py-3">
+                                <Select
+                                  value={editDepartment}
+                                  onValueChange={setEditDepartment}
+                                >
+                                  <SelectTrigger className="h-8">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {departments.map(dept => (
+                                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
                               </td>
                               <td className="px-4 py-3">
                                 <Input
@@ -275,8 +391,10 @@ const Dimensions2 = () => {
                             </>
                           ) : (
                             <>
-                              <td className="px-4 py-3 font-medium">{sku.name}</td>
-                              <td className="px-4 py-3 text-muted-foreground">{sku.code}</td>
+                              <td className="px-4 py-3 font-mono text-sm">{sku.id}</td>
+                              <td className="px-4 py-3 font-medium max-w-[200px] truncate" title={sku.name}>{sku.name}</td>
+                              <td className="px-4 py-3 text-muted-foreground">{sku.class}</td>
+                              <td className="px-4 py-3 text-muted-foreground">{sku.department}</td>
                               <td className="px-4 py-3 text-right">${sku.price.toFixed(2)}</td>
                               <td className="px-4 py-3 text-right">${sku.cost.toFixed(2)}</td>
                               <td className="px-4 py-3 text-right">
