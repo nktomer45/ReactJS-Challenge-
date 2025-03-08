@@ -1,4 +1,6 @@
+
 import { toast } from "sonner";
+import { generateWeeks, getCalendarItemByWeek } from "./calendarData";
 
 // Spreadsheet ID from the URL
 const SPREADSHEET_ID = '1EgMU8-gBeUs5j898IZAHI4WOdXe-ewRw';
@@ -21,7 +23,9 @@ interface SKU {
 
 interface WeekData {
   week: string;
+  weekLabel?: string;
   month: string;
+  monthLabel?: string; 
   gmDollars: number;
   salesDollars: number;
   gmPercent: number;
@@ -219,7 +223,7 @@ export async function fetchPlanningData(): Promise<{
     // Get the planning data from the API or use mock data
     const planningSheet = await fetchSheetData('Planning');
     
-    // Generate weeks
+    // Generate weeks using calendar data
     const weeks = generateWeeks();
     
     // Initialize rows with cross join of stores and SKUs
@@ -291,7 +295,7 @@ export async function fetchWeeklyData(storeId: string): Promise<WeekData[]> {
     const skusData = await fetchSKUs();
     const planningSheet = await fetchSheetData('Planning');
     
-    // Generate weeks
+    // Generate weeks using calendar data
     const weeks = generateWeeks();
     
     // Use API data if available, otherwise use mock data
@@ -324,9 +328,14 @@ export async function fetchWeeklyData(storeId: string): Promise<WeekData[]> {
       
       const gmPercent = totalSalesDollars > 0 ? (totalGmDollars / totalSalesDollars) * 100 : 0;
       
+      // Get additional calendar information
+      const calendarItem = getCalendarItemByWeek(week.week);
+      
       return {
         week: week.week,
+        weekLabel: calendarItem?.weekLabel,
         month: week.month,
+        monthLabel: calendarItem?.monthLabel,
         gmDollars: totalGmDollars,
         salesDollars: totalSalesDollars,
         gmPercent
@@ -340,37 +349,37 @@ export async function fetchWeeklyData(storeId: string): Promise<WeekData[]> {
   }
 }
 
-// Helper function to generate weeks
-export function generateWeeks() {
-  const weeks = [];
-  const months = ['Jan', 'Feb', 'Mar', 'Apr'];
-  
-  for (let m = 0; m < months.length; m++) {
-    for (let w = 1; w <= 4; w++) {
-      const weekNum = m * 4 + w;
-      const paddedNum = weekNum.toString().padStart(2, '0');
-      weeks.push({
-        id: `W${paddedNum}`,
-        week: `W${paddedNum}`,
-        month: months[m]
-      });
-    }
-  }
-  
-  // Add weeks 17-52 to match planning data
-  for (let weekNum = 17; weekNum <= 52; weekNum++) {
-    const paddedNum = weekNum.toString().padStart(2, '0');
-    const monthIndex = Math.floor((weekNum-1) / 4) % 12;
-    const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][monthIndex];
-    
-    if (weekNum <= 16) continue; // Skip weeks already added
-    
-    weeks.push({
-      id: `W${paddedNum}`,
-      week: `W${paddedNum}`,
-      month: monthName
-    });
-  }
-  
-  return weeks;
-}
+// Helper function to generate weeks - using imported function instead
+// export function generateWeeks() {
+//   const weeks = [];
+//   const months = ['Jan', 'Feb', 'Mar', 'Apr'];
+//   
+//   for (let m = 0; m < months.length; m++) {
+//     for (let w = 1; w <= 4; w++) {
+//       const weekNum = m * 4 + w;
+//       const paddedNum = weekNum.toString().padStart(2, '0');
+//       weeks.push({
+//         id: `W${paddedNum}`,
+//         week: `W${paddedNum}`,
+//         month: months[m]
+//       });
+//     }
+//   }
+//   
+//   // Add weeks 17-52 to match planning data
+//   for (let weekNum = 17; weekNum <= 52; weekNum++) {
+//     const paddedNum = weekNum.toString().padStart(2, '0');
+//     const monthIndex = Math.floor((weekNum-1) / 4) % 12;
+//     const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][monthIndex];
+//     
+//     if (weekNum <= 16) continue; // Skip weeks already added
+//     
+//     weeks.push({
+//       id: `W${paddedNum}`,
+//       week: `W${paddedNum}`,
+//       month: monthName
+//     });
+//   }
+//   
+//   return weeks;
+// }

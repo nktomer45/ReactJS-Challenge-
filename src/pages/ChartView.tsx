@@ -24,11 +24,15 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { fetchStores, fetchWeeklyData } from '@/utils/googleSheets';
+import { getUniqueMonths } from '@/utils/calendarData';
 
 const ChartView = () => {
-  const [selectedStore, setSelectedStore] = useState<string>('1');
+  const [selectedStore, setSelectedStore] = useState<string>('ST035');
+  const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [data, setData] = useState<any[]>([]);
+  const [filteredData, setFilteredData] = useState<any[]>([]);
   const [stores, setStores] = useState<{id: string, name: string}[]>([]);
+  const [months, setMonths] = useState<{month: string, label: string}[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch stores when component mounts
@@ -41,6 +45,10 @@ const ChartView = () => {
       if (storesData.length > 0 && !selectedStore) {
         setSelectedStore(storesData[0].id);
       }
+      
+      // Get unique months from calendar data
+      const calendarMonths = getUniqueMonths();
+      setMonths(calendarMonths);
     };
     
     loadStores();
@@ -54,6 +62,7 @@ const ChartView = () => {
       if (selectedStore) {
         const weeklyData = await fetchWeeklyData(selectedStore);
         setData(weeklyData);
+        filterDataByMonth(weeklyData, selectedMonth);
       }
       
       setIsLoading(false);
@@ -61,10 +70,34 @@ const ChartView = () => {
     
     loadData();
   }, [selectedStore]);
+  
+  // Filter data when month selection changes
+  useEffect(() => {
+    filterDataByMonth(data, selectedMonth);
+  }, [selectedMonth]);
+  
+  // Function to filter data by month
+  const filterDataByMonth = (weeklyData: any[], month: string) => {
+    if (!month) {
+      setFilteredData(weeklyData);
+      return;
+    }
+    
+    const filtered = weeklyData.filter(item => {
+      const calendarMonth = item.monthLabel;
+      return !month || calendarMonth === month;
+    });
+    
+    setFilteredData(filtered);
+  };
 
   const handleStoreChange = (value: string) => {
     setSelectedStore(value);
     toast.info(`Loading data for ${stores.find(s => s.id === value)?.name}`);
+  };
+  
+  const handleMonthChange = (value: string) => {
+    setSelectedMonth(value);
   };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -107,6 +140,23 @@ const ChartView = () => {
                 </SelectContent>
               </Select>
             </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Month:</span>
+              <Select value={selectedMonth} onValueChange={handleMonthChange}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="All Months" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All Months</SelectItem>
+                  {months.map(month => (
+                    <SelectItem key={month.month} value={month.label}>
+                      {month.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
@@ -128,7 +178,7 @@ const ChartView = () => {
               <div className="h-[500px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={data}
+                    data={filteredData}
                     margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
