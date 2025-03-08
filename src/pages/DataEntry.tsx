@@ -24,7 +24,8 @@ const DataEntry = () => {
           <CardContent className="p-4">
             <PlanningDataGrid 
               rowData={rowData} 
-              isLoading={isLoading} 
+              isLoading={isLoading}
+              gridRef={gridRef}
             />
           </CardContent>
         </Card>

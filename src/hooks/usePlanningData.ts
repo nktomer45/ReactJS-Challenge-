@@ -16,9 +16,13 @@ export const usePlanningData = (gridRef: RefObject<AgGridReact>) => {
     setIsLoading(true);
     
     try {
-      // Fetch data from Google Sheets
+      // Fetch data from Google Sheets or use mock data
       const { rowData: planningData } = await fetchPlanningData();
       setRowData(planningData);
+      
+      if (planningData.length === 0) {
+        toast.warning('No planning data available');
+      }
     } catch (error) {
       console.error('Error loading planning data:', error);
       toast.error('Failed to load planning data');
@@ -38,7 +42,7 @@ export const usePlanningData = (gridRef: RefObject<AgGridReact>) => {
 
   const handleRefreshData = async () => {
     setIsLoading(true);
-    toast.info('Refreshing data from Google Sheets...');
+    toast.info('Refreshing data...');
     
     try {
       const { rowData: planningData } = await fetchPlanningData();

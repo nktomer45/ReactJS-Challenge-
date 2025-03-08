@@ -1,5 +1,5 @@
 
-import { useRef } from 'react';
+import { useRef, RefObject } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -10,6 +10,7 @@ import { generateWeeks } from '@/utils/googleSheets';
 interface PlanningDataGridProps {
   rowData: any[];
   isLoading: boolean;
+  gridRef: RefObject<AgGridReact>;
 }
 
 export const generateColumnDefs = (weeks: {id: string, month: string, week: string}[]) => {
@@ -136,9 +137,7 @@ export const generateColumnDefs = (weeks: {id: string, month: string, week: stri
   return [...fixedCols, ...monthColDefs];
 };
 
-const PlanningDataGrid = ({ rowData, isLoading }: PlanningDataGridProps) => {
-  const gridRef = useRef<AgGridReact>(null);
-  
+const PlanningDataGrid = ({ rowData, isLoading, gridRef }: PlanningDataGridProps) => {
   if (isLoading) {
     return (
       <motion.div
@@ -168,12 +167,12 @@ const PlanningDataGrid = ({ rowData, isLoading }: PlanningDataGridProps) => {
         rowData={rowData}
         columnDefs={columnDefs}
         animateRows={true}
-        enableCellChangeFlash={true}
         defaultColDef={{
           resizable: true,
           sortable: true,
           filter: true,
-          suppressMovable: false
+          suppressMovable: false,
+          enableCellChangeFlash: true
         }}
         suppressRowClickSelection={true}
       />
