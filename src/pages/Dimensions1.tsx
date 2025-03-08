@@ -10,8 +10,16 @@ import {
   CardDescription 
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Plus, Trash2, ArrowUpDown } from 'lucide-react';
+import { Plus, Trash2, ArrowUpDown, Store } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface Store {
   id: string;
@@ -50,6 +58,7 @@ const Dimensions1 = () => {
   const [newStoreName, setNewStoreName] = useState('');
   const [newStoreCity, setNewStoreCity] = useState('');
   const [newStoreState, setNewStoreState] = useState('');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     // Load initial stores data
@@ -83,6 +92,7 @@ const Dimensions1 = () => {
     setNewStoreName('');
     setNewStoreCity('');
     setNewStoreState('');
+    setIsDialogOpen(false);
     toast.success(`Added store: ${newStoreName}`);
   };
 
@@ -245,6 +255,65 @@ const Dimensions1 = () => {
             </CardContent>
           </Card>
         </div>
+        
+        {/* Floating Add Store Button */}
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              className="fixed bottom-6 right-6 rounded-full shadow-lg h-14 w-14 p-0 flex items-center justify-center"
+              size="icon"
+            >
+              <Store className="h-6 w-6" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Store</DialogTitle>
+              <DialogDescription>
+                Enter the details for the new store below
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label htmlFor="dialog-name" className="text-sm font-medium">
+                  Store Name
+                </label>
+                <Input
+                  id="dialog-name"
+                  value={newStoreName}
+                  onChange={(e) => setNewStoreName(e.target.value)}
+                  placeholder="Enter store name"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="dialog-city" className="text-sm font-medium">
+                  City
+                </label>
+                <Input
+                  id="dialog-city"
+                  value={newStoreCity}
+                  onChange={(e) => setNewStoreCity(e.target.value)}
+                  placeholder="Enter city"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="dialog-state" className="text-sm font-medium">
+                  State
+                </label>
+                <Input
+                  id="dialog-state"
+                  value={newStoreState}
+                  onChange={(e) => setNewStoreState(e.target.value)}
+                  placeholder="Enter state (e.g. CA)"
+                  maxLength={2}
+                />
+              </div>
+              <Button onClick={handleAddStore} className="w-full">
+                <Plus className="h-4 w-4 mr-2" /> Add Store
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </PageTransition>
   );

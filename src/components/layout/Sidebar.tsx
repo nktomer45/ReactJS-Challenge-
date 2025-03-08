@@ -42,7 +42,7 @@ const Sidebar = () => {
 
   return (
     <motion.div 
-      className="h-[calc(100vh-4rem)] border-r border-border bg-sidebar-background flex flex-col"
+      className="h-[calc(100vh-4rem)] border-r border-border bg-sidebar-background flex flex-col overflow-hidden"
       initial={{ width: isCollapsed ? 64 : 240 }}
       animate={{ width: isCollapsed ? 64 : 240 }}
       transition={{ duration: 0.2 }}
