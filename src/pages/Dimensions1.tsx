@@ -41,7 +41,7 @@ const initialStoresData: Store[] = [
   { id: 'ST175', name: 'Seattle Skyline Goods', location: 'Seattle, WA', city: 'Seattle', state: 'WA', seqNo: 16 },
   { id: 'ST176', name: 'Miami Breeze Apparel', location: 'Miami, FL', city: 'Miami', state: 'FL', seqNo: 17 },
   { id: 'ST177', name: 'San Diego Wave Surf Shop', location: 'San Diego, CA', city: 'San Diego', state: 'CA', seqNo: 18 },
-  { id: 'ST193', name: 'Charlotte Queen's Closet', location: 'Charlotte, NC', city: 'Charlotte', state: 'NC', seqNo: 19 },
+  { id: 'ST193', name: 'Charlotte Queen\'s Closet', location: 'Charlotte, NC', city: 'Charlotte', state: 'NC', seqNo: 19 },
   { id: 'ST208', name: 'Detroit Motor Gear', location: 'Detroit, MI', city: 'Detroit', state: 'MI', seqNo: 20 }
 ];
 
