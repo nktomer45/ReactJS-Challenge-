@@ -1,11 +1,10 @@
-
 import { useRef, RefObject } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { motion } from 'framer-motion';
 import { formatCurrency, formatPercent, getGmPercentColor } from '@/utils/formatting';
-import { generateWeeks } from '@/utils/googleSheets';
+import { generateWeeks } from '@/utils/calendarData';
 
 interface PlanningDataGridProps {
   rowData: any[];
