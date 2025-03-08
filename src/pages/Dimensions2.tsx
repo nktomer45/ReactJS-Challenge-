@@ -9,7 +9,7 @@ import {
   CardDescription 
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Plus, Trash2, Edit, Check, X } from 'lucide-react';
+import { Plus, Trash2, Edit, Check, X, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import { 
   Select,
@@ -18,6 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface SKU {
   id: string;
@@ -69,6 +77,7 @@ const Dimensions2 = () => {
   const [editDepartment, setEditDepartment] = useState('');
   const [editPrice, setEditPrice] = useState('');
   const [editCost, setEditCost] = useState('');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     setSkus(initialSkusData);
@@ -426,6 +435,110 @@ const Dimensions2 = () => {
             </CardContent>
           </Card>
         </div>
+
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              className="fixed bottom-6 right-6 rounded-full shadow-lg h-14 w-14 p-0 flex items-center justify-center"
+              size="icon"
+            >
+              <Package className="h-6 w-6" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New SKU</DialogTitle>
+              <DialogDescription>
+                Enter the details for the new SKU below
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label htmlFor="dialog-name" className="text-sm font-medium">
+                  SKU Name
+                </label>
+                <Input
+                  id="dialog-name"
+                  value={newSkuName}
+                  onChange={(e) => setNewSkuName(e.target.value)}
+                  placeholder="Enter SKU name"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="dialog-class" className="text-sm font-medium">
+                  Product Class
+                </label>
+                <Select
+                  value={newSkuClass}
+                  onValueChange={setNewSkuClass}
+                >
+                  <SelectTrigger id="dialog-class">
+                    <SelectValue placeholder="Select product class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {productClasses.map(cls => (
+                      <SelectItem key={cls} value={cls}>{cls}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="dialog-department" className="text-sm font-medium">
+                  Department
+                </label>
+                <Select
+                  value={newSkuDepartment}
+                  onValueChange={setNewSkuDepartment}
+                >
+                  <SelectTrigger id="dialog-department">
+                    <SelectValue placeholder="Select department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departments.map(dept => (
+                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="dialog-price" className="text-sm font-medium">
+                  Price ($)
+                </label>
+                <Input
+                  id="dialog-price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={newSkuPrice}
+                  onChange={(e) => setNewSkuPrice(e.target.value)}
+                  placeholder="Enter price"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="dialog-cost" className="text-sm font-medium">
+                  Cost ($)
+                </label>
+                <Input
+                  id="dialog-cost"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={newSkuCost}
+                  onChange={(e) => setNewSkuCost(e.target.value)}
+                  placeholder="Enter cost"
+                />
+              </div>
+              
+              <Button onClick={handleAddSku} className="w-full">
+                <Plus className="h-4 w-4 mr-2" /> Add SKU
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </PageTransition>
   );
