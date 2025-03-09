@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import PageTransition from '@/components/layout/PageTransition';
 import { Button } from '@/components/ui/button';
@@ -125,6 +126,7 @@ const Dimensions2 = () => {
     setNewSkuDepartment('');
     setNewSkuPrice('');
     setNewSkuCost('');
+    setIsDialogOpen(false);
     toast.success(`Added SKU: ${newSkuName}`);
   };
 
@@ -194,104 +196,7 @@ const Dimensions2 = () => {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
-          <Card>
-            <CardHeader>
-              <CardTitle>Add New SKU</CardTitle>
-              <CardDescription>Enter SKU details below</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium mb-1">
-                    SKU Name
-                  </label>
-                  <Input
-                    id="name"
-                    value={newSkuName}
-                    onChange={(e) => setNewSkuName(e.target.value)}
-                    placeholder="Enter SKU name"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="class" className="block text-sm font-medium mb-1">
-                    Product Class
-                  </label>
-                  <Select
-                    value={newSkuClass}
-                    onValueChange={setNewSkuClass}
-                  >
-                    <SelectTrigger id="class">
-                      <SelectValue placeholder="Select product class" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {productClasses.map(cls => (
-                        <SelectItem key={cls} value={cls}>{cls}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <label htmlFor="department" className="block text-sm font-medium mb-1">
-                    Department
-                  </label>
-                  <Select
-                    value={newSkuDepartment}
-                    onValueChange={setNewSkuDepartment}
-                  >
-                    <SelectTrigger id="department">
-                      <SelectValue placeholder="Select department" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {departments.map(dept => (
-                        <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <label htmlFor="price" className="block text-sm font-medium mb-1">
-                    Price ($)
-                  </label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={newSkuPrice}
-                    onChange={(e) => setNewSkuPrice(e.target.value)}
-                    placeholder="Enter price"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="cost" className="block text-sm font-medium mb-1">
-                    Cost ($)
-                  </label>
-                  <Input
-                    id="cost"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={newSkuCost}
-                    onChange={(e) => setNewSkuCost(e.target.value)}
-                    placeholder="Enter cost"
-                  />
-                </div>
-                
-                <Button 
-                  onClick={handleAddSku} 
-                  className="w-full"
-                >
-                  <Plus className="h-4 w-4 mr-2" /> Add SKU
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-          
+        <div className="w-full">
           <Card>
             <CardHeader>
               <CardTitle>SKU List</CardTitle>
@@ -303,7 +208,7 @@ const Dimensions2 = () => {
                   No SKUs added yet. Add your first SKU.
                 </div>
               ) : (
-                <div className="border rounded-md overflow-hidden">
+                <div className="border rounded-md overflow-hidden overflow-x-auto">
                   <table className="w-full">
                     <thead>
                       <tr className="bg-muted/50">
@@ -439,10 +344,10 @@ const Dimensions2 = () => {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
-              className="fixed bottom-6 right-6 rounded-full shadow-lg h-14 w-14 p-0 flex items-center justify-center"
+              className="fixed bottom-6 right-6 rounded-full shadow-lg h-14 w-14 p-0 flex items-center justify-center z-10"
               size="icon"
             >
-              <Package className="h-6 w-6" />
+              <Plus className="h-6 w-6" />
             </Button>
           </DialogTrigger>
           <DialogContent>

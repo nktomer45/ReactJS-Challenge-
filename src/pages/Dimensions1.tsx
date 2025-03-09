@@ -131,61 +131,7 @@ const Dimensions1 = () => {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
-          <Card>
-            <CardHeader>
-              <CardTitle>Add New Store</CardTitle>
-              <CardDescription>Enter store details below</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium mb-1">
-                    Store Name
-                  </label>
-                  <Input
-                    id="name"
-                    value={newStoreName}
-                    onChange={(e) => setNewStoreName(e.target.value)}
-                    placeholder="Enter store name"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="city" className="block text-sm font-medium mb-1">
-                    City
-                  </label>
-                  <Input
-                    id="city"
-                    value={newStoreCity}
-                    onChange={(e) => setNewStoreCity(e.target.value)}
-                    placeholder="Enter city"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="state" className="block text-sm font-medium mb-1">
-                    State
-                  </label>
-                  <Input
-                    id="state"
-                    value={newStoreState}
-                    onChange={(e) => setNewStoreState(e.target.value)}
-                    placeholder="Enter state (e.g. CA)"
-                    maxLength={2}
-                  />
-                </div>
-                
-                <Button 
-                  onClick={handleAddStore} 
-                  className="w-full"
-                >
-                  <Plus className="h-4 w-4 mr-2" /> Add Store
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-          
+        <div className="w-full">
           <Card>
             <CardHeader>
               <CardTitle>Store List</CardTitle>
@@ -197,7 +143,7 @@ const Dimensions1 = () => {
                   No stores added yet. Add your first store.
                 </div>
               ) : (
-                <div className="border rounded-md overflow-hidden">
+                <div className="border rounded-md overflow-hidden overflow-x-auto">
                   <table className="w-full">
                     <thead>
                       <tr className="bg-muted/50">
@@ -260,10 +206,10 @@ const Dimensions1 = () => {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
-              className="fixed bottom-6 right-6 rounded-full shadow-lg h-14 w-14 p-0 flex items-center justify-center"
+              className="fixed bottom-6 right-6 rounded-full shadow-lg h-14 w-14 p-0 flex items-center justify-center z-10"
               size="icon"
             >
-              <Store className="h-6 w-6" />
+              <Plus className="h-6 w-6" />
             </Button>
           </DialogTrigger>
           <DialogContent>
