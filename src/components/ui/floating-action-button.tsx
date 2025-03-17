@@ -27,7 +27,7 @@ export function FloatingActionButton({
     <Button
       onClick={onClick}
       className={cn(
-        "fixed bottom-8 right-8 shadow-lg z-50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
+        "fixed right-8 top-1/2 translate-y-1/2 shadow-lg z-50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
         isMobile ? "h-12 w-12 rounded-full p-0" : label ? "h-12 px-4 rounded-full" : "h-14 w-14 rounded-full p-0",
         className
       )}
