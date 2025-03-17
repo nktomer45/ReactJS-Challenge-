@@ -26,8 +26,9 @@ const App = () => (
           <CustomNavbar />
           <div className="flex flex-1">
             <Sidebar />
+            {/* Main content with left padding to prevent overlap with sidebar */}
             <main className="flex-1 overflow-auto pl-[240px]">
-              <div className="w-full max-w-7xl mx-auto">
+              <div className="w-full max-w-7xl mx-auto px-4 py-6">
                 <AnimatePresence mode="wait">
                   <Routes>
                     <Route path="/" element={<Index />} />

@@ -42,10 +42,11 @@ const Sidebar = () => {
 
   return (
     <motion.div 
-      className="h-screen fixed top-0 left-0 border-r border-border bg-sidebar-background flex flex-col z-40"
+      className="fixed top-0 left-0 h-screen border-r border-border bg-sidebar-background flex flex-col z-40"
       initial={{ width: isCollapsed ? 64 : 240 }}
       animate={{ width: isCollapsed ? 64 : 240 }}
       transition={{ duration: 0.2 }}
+      style={{ marginTop: '64px' }} // Adjust for navbar height
     >
       <div className="flex items-center justify-between p-4">
         {!isCollapsed && <h2 className="text-sm font-semibold">Navigation</h2>}
@@ -60,7 +61,7 @@ const Sidebar = () => {
         </Button>
       </div>
       
-      <nav className="space-y-1 p-2 overflow-y-auto">
+      <nav className="space-y-1 p-2 overflow-y-auto flex-1">
         {navItems.map((item) => (
           <NavItem
             key={item.href}
