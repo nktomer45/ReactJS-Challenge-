@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Store, Package, BarChart2, LineChart, Menu } from 'lucide-react';
@@ -42,7 +41,7 @@ const Sidebar = () => {
 
   return (
     <motion.div 
-      className="h-screen sticky top-0 border-r border-border bg-sidebar-background flex flex-col overflow-hidden"
+      className="h-screen fixed top-0 left-0 border-r border-border bg-sidebar-background flex flex-col"
       initial={{ width: isCollapsed ? 64 : 240 }}
       animate={{ width: isCollapsed ? 64 : 240 }}
       transition={{ duration: 0.2 }}
@@ -60,7 +59,7 @@ const Sidebar = () => {
         </Button>
       </div>
       
-      <nav className="space-y-1 p-2 flex-1">
+      <nav className="space-y-1 p-2">
         {navItems.map((item) => (
           <NavItem
             key={item.href}

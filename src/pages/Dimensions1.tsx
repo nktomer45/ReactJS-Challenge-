@@ -206,7 +206,7 @@ const Dimensions1 = () => {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
-              className="fixed bottom-6 right-6 rounded-full shadow-lg h-14 w-14 p-0 flex items-center justify-center z-10"
+              className="fixed bottom-8 right-8 rounded-full shadow-lg h-14 w-14 p-0 flex items-center justify-center z-50"
               size="icon"
             >
               <Plus className="h-6 w-6" />
