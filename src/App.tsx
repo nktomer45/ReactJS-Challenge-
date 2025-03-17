@@ -13,39 +13,44 @@ import ChartView from "./pages/ChartView";
 import NotFound from "./pages/NotFound";
 import CustomNavbar from "./components/layout/CustomNavbar";
 import Sidebar from "./components/layout/Sidebar";
+import { useIsMobile } from "./hooks/use-mobile";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner position="top-right" expand closeButton theme="light" richColors />
-      <BrowserRouter>
-        <div className="min-h-screen flex flex-col">
-          <CustomNavbar />
-          <div className="flex flex-1">
-            <Sidebar />
-            {/* Main content with left padding to prevent overlap with sidebar */}
-            <main className="flex-1 overflow-auto pl-[240px]">
-              <div className="w-full max-w-7xl mx-auto px-4 py-6">
-                <AnimatePresence mode="wait">
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/dimensions1" element={<Dimensions1 />} />
-                    <Route path="/dimensions2" element={<Dimensions2 />} />
-                    <Route path="/data-entry" element={<DataEntry />} />
-                    <Route path="/chart-view" element={<ChartView />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </AnimatePresence>
-              </div>
-            </main>
+const App = () => {
+  const isMobile = useIsMobile();
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner position="top-right" expand closeButton theme="light" richColors />
+        <BrowserRouter>
+          <div className="min-h-screen flex flex-col">
+            <CustomNavbar />
+            <div className="flex flex-1">
+              <Sidebar />
+              {/* Main content with responsive padding */}
+              <main className={`flex-1 overflow-auto ${isMobile ? 'pl-0' : 'pl-[240px]'}`}>
+                <div className="w-full max-w-7xl mx-auto px-4 py-6">
+                  <AnimatePresence mode="wait">
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/dimensions1" element={<Dimensions1 />} />
+                      <Route path="/dimensions2" element={<Dimensions2 />} />
+                      <Route path="/data-entry" element={<DataEntry />} />
+                      <Route path="/chart-view" element={<ChartView />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </AnimatePresence>
+                </div>
+              </main>
+            </div>
           </div>
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

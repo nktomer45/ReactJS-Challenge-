@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import Navbar from '@/components/layout/Navbar';
 import PageTransition from '@/components/layout/PageTransition';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const features = [
   {
@@ -33,12 +34,14 @@ const features = [
 ];
 
 const Index = () => {
+  const isMobile = useIsMobile();
+
   return (
     <>
       <Navbar />
       <PageTransition>
-        <div className="container py-24 px-4 mx-auto">
-          <section className="max-w-5xl mx-auto text-center mb-16">
+        <div className="container py-12 md:py-24 px-4 mx-auto">
+          <section className="max-w-5xl mx-auto text-center mb-8 md:mb-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -48,14 +51,14 @@ const Index = () => {
               <Badge className="px-3 py-1 text-sm" variant="outline">
                 Data Dimensions Magic
               </Badge>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-cyan-500">
+              <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-cyan-500">
                 Analyze & Visualize Data
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto">
                 A powerful yet simple platform for manipulating, analyzing, and visualizing your dimensional data with elegant interactions.
               </p>
               <div className="flex justify-center gap-4 pt-4">
-                <Button asChild size="lg" className="rounded-full btn-hover-effect">
+                <Button asChild size={isMobile ? "default" : "lg"} className="rounded-full btn-hover-effect">
                   <Link to="/dimensions1">
                     Get Started
                     <ArrowRightIcon className="ml-2 h-4 w-4" />

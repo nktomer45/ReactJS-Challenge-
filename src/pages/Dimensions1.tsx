@@ -20,6 +20,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { FloatingActionButton } from '@/components/ui/floating-action-button';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Store {
   id: string;
@@ -59,6 +61,7 @@ const Dimensions1 = () => {
   const [newStoreCity, setNewStoreCity] = useState('');
   const [newStoreState, setNewStoreState] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Load initial stores data
@@ -123,7 +126,7 @@ const Dimensions1 = () => {
 
   return (
     <PageTransition>
-      <div className="p-6 max-w-[1600px] mx-auto">
+      <div className="p-4 sm:p-6 max-w-[1600px] mx-auto">
         <div className="mb-6">
           <h1 className="text-2xl font-bold mb-1">Store Management</h1>
           <p className="text-muted-foreground">
@@ -150,7 +153,7 @@ const Dimensions1 = () => {
                         <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground w-12">Order</th>
                         <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Store ID</th>
                         <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Store Name</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Location</th>
+                        <th className="hidden md:table-cell px-4 py-3 text-left text-sm font-medium text-muted-foreground">Location</th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Actions</th>
                       </tr>
                     </thead>
@@ -181,7 +184,7 @@ const Dimensions1 = () => {
                           </td>
                           <td className="px-4 py-3 font-mono text-sm">{store.id}</td>
                           <td className="px-4 py-3 font-medium">{store.name}</td>
-                          <td className="px-4 py-3 text-muted-foreground">{store.location}</td>
+                          <td className="hidden md:table-cell px-4 py-3 text-muted-foreground">{store.location}</td>
                           <td className="px-4 py-3 text-right">
                             <Button
                               variant="ghost"
@@ -205,14 +208,13 @@ const Dimensions1 = () => {
         {/* Floating Add Store Button */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button
-              className="fixed bottom-8 right-8 rounded-full shadow-lg h-14 w-14 p-0 flex items-center justify-center z-50"
-              size="icon"
-            >
-              <Plus className="h-6 w-6" />
-            </Button>
+            <FloatingActionButton 
+              icon={<Plus className="h-6 w-6" />}
+              label={isMobile ? undefined : "Add Store"}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+            />
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Add New Store</DialogTitle>
               <DialogDescription>

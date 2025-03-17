@@ -1,10 +1,11 @@
 
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Store, Package, BarChart2, LineChart, Menu } from 'lucide-react';
+import { Store, Package, BarChart2, LineChart, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface NavItemProps {
   href: string;
@@ -31,7 +32,19 @@ const NavItem = ({ href, icon: Icon, text, isActive, isCollapsed }: NavItemProps
 
 const Sidebar = () => {
   const location = useLocation();
+  const isMobile = useIsMobile();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // Close mobile menu when route changes
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // Create a handler for toggling the mobile menu
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   const navItems = [
     { href: '/dimensions1', icon: Store, text: 'Stores' },
@@ -40,24 +53,46 @@ const Sidebar = () => {
     { href: '/chart-view', icon: LineChart, text: 'Charts' },
   ];
 
+  // If on mobile and menu is closed, show a floating button to open it
+  if (isMobile && !isMobileMenuOpen) {
+    return (
+      <Button
+        variant="default"
+        size="icon"
+        onClick={toggleMobileMenu}
+        className="fixed top-[72px] left-4 z-50 h-10 w-10 rounded-full shadow-md"
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
+    );
+  }
+
   return (
     <motion.div 
-      className="fixed top-0 left-0 h-screen border-r border-border bg-sidebar-background flex flex-col z-40"
-      initial={{ width: isCollapsed ? 64 : 240 }}
-      animate={{ width: isCollapsed ? 64 : 240 }}
+      className={cn(
+        "fixed z-40 border-r border-border bg-sidebar-background flex flex-col",
+        isMobile 
+          ? "top-0 left-0 right-0 bottom-0" 
+          : "top-0 left-0 h-screen"
+      )}
+      initial={{ width: isMobile ? "100%" : isCollapsed ? 64 : 240, x: isMobile ? "-100%" : 0 }}
+      animate={{ 
+        width: isMobile ? "100%" : isCollapsed ? 64 : 240,
+        x: isMobile ? (isMobileMenuOpen ? 0 : "-100%") : 0
+      }}
       transition={{ duration: 0.2 }}
-      style={{ marginTop: '64px' }} // Adjust for navbar height
+      style={{ marginTop: isMobile ? '0' : '64px' }}
     >
       <div className="flex items-center justify-between p-4">
         {!isCollapsed && <h2 className="text-sm font-semibold">Navigation</h2>}
         <Button 
           variant="ghost" 
           size="icon"
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={() => isMobile ? toggleMobileMenu() : setIsCollapsed(!isCollapsed)}
           className="ml-auto"
-          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={isMobile ? "Close menu" : isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <Menu className="h-5 w-5" />
+          {isMobile ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
       </div>
       
