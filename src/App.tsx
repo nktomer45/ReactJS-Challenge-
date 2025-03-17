@@ -24,19 +24,21 @@ const App = () => (
       <BrowserRouter>
         <div className="min-h-screen flex flex-col">
           <CustomNavbar />
-          <div className="flex flex-1 overflow-hidden">
+          <div className="flex flex-1">
             <Sidebar />
-            <main className="flex-1 overflow-auto">
-              <AnimatePresence mode="wait">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/dimensions1" element={<Dimensions1 />} />
-                  <Route path="/dimensions2" element={<Dimensions2 />} />
-                  <Route path="/data-entry" element={<DataEntry />} />
-                  <Route path="/chart-view" element={<ChartView />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </AnimatePresence>
+            <main className="flex-1 overflow-auto pl-[240px]">
+              <div className="w-full max-w-7xl mx-auto">
+                <AnimatePresence mode="wait">
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/dimensions1" element={<Dimensions1 />} />
+                    <Route path="/dimensions2" element={<Dimensions2 />} />
+                    <Route path="/data-entry" element={<DataEntry />} />
+                    <Route path="/chart-view" element={<ChartView />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </AnimatePresence>
+              </div>
             </main>
           </div>
         </div>
