@@ -211,7 +211,7 @@ const Dimensions1 = () => {
             <FloatingActionButton 
               icon={<Plus className="h-6 w-6" />}
               label={isMobile ? undefined : "Add Store"}
-              className="bg-blue-500 hover:bg-blue-600 text-white"
+              className="bg-purple-500 hover:bg-purple-600 text-white shadow-lg"
             />
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
