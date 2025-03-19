@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import PageTransition from '@/components/layout/PageTransition';
 import { Button } from '@/components/ui/button';
@@ -27,6 +26,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { FloatingActionButton } from '@/components/ui/floating-action-button';
 
 interface SKU {
   id: string;
@@ -223,115 +223,113 @@ const Dimensions2 = () => {
                     </thead>
                     <tbody>
                       {skus.map((sku) => (
-                        <tr key={sku.id} className="border-t">
-                          {editingId === sku.id ? (
-                            <>
-                              <td className="px-4 py-3 font-mono text-sm">{sku.id}</td>
-                              <td className="px-4 py-3">
-                                <Input
-                                  value={editName}
-                                  onChange={(e) => setEditName(e.target.value)}
-                                  className="h-8"
-                                />
-                              </td>
-                              <td className="px-4 py-3">
-                                <Select
-                                  value={editClass}
-                                  onValueChange={setEditClass}
-                                >
-                                  <SelectTrigger className="h-8">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {productClasses.map(cls => (
-                                      <SelectItem key={cls} value={cls}>{cls}</SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </td>
-                              <td className="px-4 py-3">
-                                <Select
-                                  value={editDepartment}
-                                  onValueChange={setEditDepartment}
-                                >
-                                  <SelectTrigger className="h-8">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {departments.map(dept => (
-                                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </td>
-                              <td className="px-4 py-3">
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  min="0"
-                                  value={editPrice}
-                                  onChange={(e) => setEditPrice(e.target.value)}
-                                  className="h-8 text-right"
-                                />
-                              </td>
-                              <td className="px-4 py-3">
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  min="0"
-                                  value={editCost}
-                                  onChange={(e) => setEditCost(e.target.value)}
-                                  className="h-8 text-right"
-                                />
-                              </td>
-                              <td className="px-4 py-3 text-right">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => saveEdit(sku.id)}
-                                  className="h-8 w-8 text-green-500 mr-1"
-                                >
-                                  <Check className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={cancelEditing}
-                                  className="h-8 w-8 text-red-500"
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              </td>
-                            </>
-                          ) : (
-                            <>
-                              <td className="px-4 py-3 font-mono text-sm">{sku.id}</td>
-                              <td className="px-4 py-3 font-medium max-w-[200px] truncate" title={sku.name}>{sku.name}</td>
-                              <td className="px-4 py-3 text-muted-foreground">{sku.class}</td>
-                              <td className="px-4 py-3 text-muted-foreground">{sku.department}</td>
-                              <td className="px-4 py-3 text-right">${sku.price.toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">${sku.cost.toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => startEditing(sku)}
-                                  className="h-8 w-8 text-muted-foreground hover:text-foreground mr-1"
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleDeleteSku(sku.id)}
-                                  className="h-8 w-8 text-destructive hover:text-destructive/90"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </td>
-                            </>
-                          )}
-                        </tr>
+                        {editingId === sku.id ? (
+                          <>
+                            <td className="px-4 py-3 font-mono text-sm">{sku.id}</td>
+                            <td className="px-4 py-3">
+                              <Input
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
+                                className="h-8"
+                              />
+                            </td>
+                            <td className="px-4 py-3">
+                              <Select
+                                value={editClass}
+                                onValueChange={setEditClass}
+                              >
+                                <SelectTrigger className="h-8">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {productClasses.map(cls => (
+                                    <SelectItem key={cls} value={cls}>{cls}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </td>
+                            <td className="px-4 py-3">
+                              <Select
+                                value={editDepartment}
+                                onValueChange={setEditDepartment}
+                              >
+                                <SelectTrigger className="h-8">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {departments.map(dept => (
+                                    <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </td>
+                            <td className="px-4 py-3">
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={editPrice}
+                                onChange={(e) => setEditPrice(e.target.value)}
+                                className="h-8 text-right"
+                              />
+                            </td>
+                            <td className="px-4 py-3">
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={editCost}
+                                onChange={(e) => setEditCost(e.target.value)}
+                                className="h-8 text-right"
+                              />
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => saveEdit(sku.id)}
+                                className="h-8 w-8 text-green-500 mr-1"
+                              >
+                                <Check className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={cancelEditing}
+                                className="h-8 w-8 text-red-500"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="px-4 py-3 font-mono text-sm">{sku.id}</td>
+                            <td className="px-4 py-3 font-medium max-w-[200px] truncate" title={sku.name}>{sku.name}</td>
+                            <td className="px-4 py-3 text-muted-foreground">{sku.class}</td>
+                            <td className="px-4 py-3 text-muted-foreground">{sku.department}</td>
+                            <td className="px-4 py-3 text-right">${sku.price.toFixed(2)}</td>
+                            <td className="px-4 py-3 text-right">${sku.cost.toFixed(2)}</td>
+                            <td className="px-4 py-3 text-right">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => startEditing(sku)}
+                                className="h-8 w-8 text-muted-foreground hover:text-foreground mr-1"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteSku(sku.id)}
+                                className="h-8 w-8 text-destructive hover:text-destructive/90"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </td>
+                          </>
+                        )}
                       ))}
                     </tbody>
                   </table>
@@ -343,12 +341,10 @@ const Dimensions2 = () => {
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button
-              className="fixed bottom-6 right-6 rounded-full shadow-lg h-14 w-14 p-0 flex items-center justify-center z-10"
-              size="icon"
-            >
-              <Plus className="h-6 w-6" />
-            </Button>
+            <FloatingActionButton 
+              icon={<Plus className="h-6 w-6" />} 
+              onClick={() => setIsDialogOpen(true)}
+            />
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
